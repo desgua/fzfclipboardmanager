@@ -4,18 +4,9 @@ histfile="$HOME/.desgua/cliphistory"
 
 if [ "$1" = "-d" ]; then 
 	dpid="$(ps -e -o cmd | grep "fzfclipmanager -d" | wc -l)"
+	
 	if [ "$dpid" = "3" ]; then
-
-
 		PERSISTENCE () {
-#			while : ; do
-#				xclip -selection clipboard -o -t TARGETS >/dev/null 2>&1
-#				if [ "$?" != "0" ]; then
-#					tail -n 1 "$histfile" | tr -d '\n' | xsel -b -i
-#				fi
-#				sleep 2
-#			done
-			
 			while : ; do
 				clipnotifyempty
 				tail -n 1 "$histfile" | sed 's/@newline@/\n/g' | xsel -b -i
