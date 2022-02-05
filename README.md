@@ -7,7 +7,12 @@ Fast and lightweight clipboard manager
                                                   to paste the last copied content).    
                                                   
 - We use two modified versions of clipnotify (https://github.com/cdown/clipnotify), one to listen to clipboard content change,    
-                                                  and the other to listen to clipboard getting empty.    
+                                                  and the other to listen to clipboard getting empty (both a precompiled and 
+                                                  source code are available here).
+
+# Dependencies
+- fzf 
+- xsel
 
 # How to use it    
 - Start the daemon: fzfclipmanager -d     
