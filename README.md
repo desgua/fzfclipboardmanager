@@ -1,7 +1,7 @@
 # fzfclipboardmanager
 Fast and lightweight clipboard manager
 
-- Everything that once got on Clipboard is kept (aka clipboard persistence. Withoug a clipboard manager, sometimes 
+- Everything that once got on Clipboard is kept (aka clipboard persistence. Without a clipboard manager, sometimes 
                                                   a program close and what was copied to clipboard gets lost. fzfclipboard
                                                   manager prevents that from happening, keeping the clipboard always ready 
                                                   to paste the last copied content).
