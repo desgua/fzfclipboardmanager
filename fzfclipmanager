@@ -3,10 +3,24 @@
 histfile="$HOME/.desgua/cliphistory"
 
 if [ "$1" = "-q" ]; then
-	pids="$(ps -e -o pid,cmd | grep "fzfclipmanager -d" | grep -v "grep" | awk '{ print $1 }')"
-	if [ "$pids" ]; then
+	fzfcmpids="$(ps -e -o pid,cmd | grep "fzfclipmanager -d" | grep -v "grep" | awk '{ print $1 }')"
+	if [ "$fzfcmpids" ]; then
 		printf "Closing fzfclipmanager daemon...\n"
-		for pid in $pids ; do
+		for pid in $fzfcmpids ; do
+			printf "Closing pid %s: " "$pid"
+			kill -15 "$pid"
+			if [ "$?" = "0" ]; then
+				printf "Success!\n"
+			else
+				printf "Failed :-(\n"
+			fi
+		done
+	fi
+
+	cnpids="$(ps -e -o pid,cmd | grep "clipnotify" | grep -v "grep" | awk '{ print $1 }')"
+	if [ "$cnpids" ]; then
+		printf "Closing clipnotify...\n"
+		for pid in $cnpids ; do
 			printf "Closing pid %s: " "$pid"
 			kill -15 "$pid"
 			if [ "$?" = "0" ]; then
