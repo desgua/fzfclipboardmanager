@@ -1,0 +1,89 @@
+#!/bin/dash
+
+histfile="$HOME/.desgua/cliphistory"
+
+if [ "$1" = "-q" ]; then
+	pids="$(ps -e -o pid,cmd | grep "fzfclipmanager -d" | grep -v "grep" | awk '{ print $1 }')"
+	if [ "$pids" ]; then
+		printf "Closing fzfclipmanager daemon...\n"
+		for pid in $pids ; do
+			printf "Closing pid %s: " "$pid"
+			kill -15 "$pid"
+			if [ "$?" = "0" ]; then
+				printf "Success!\n"
+			else
+				printf "Failed :-(\n"
+			fi
+		done
+		exit 0
+	else
+		printf "fzfclipmanager not running."
+		exit 0
+	fi
+
+elif [ "$1" = "-d" ]; then 
+	dpid="$(ps -e -o cmd | grep "fzfclipmanager -d" | wc -l)"
+	if [ "$dpid" = "3" ]; then
+
+		PERSISTENCE () {
+			
+			while : ; do
+				clipnotify empty
+				tail -n 1 "$histfile" | sed 's/@newline@/\n/g' | xsel -b -i
+			done
+		}
+		echo "Starting persistence"
+		PERSISTENCE &
+
+		echo "Starting fzfclipmanager daemon" 
+		while : ; do 
+			# Wait until some clipboard event
+			clipnotify change
+		
+			# Then add the event to clipboard history
+			sel="$(xsel -b -o)"
+			#echo "=$sel="
+
+			# Strip line feed
+			#strippedsel="$(printf "%s" "$sel" | tr '\n' ' ')"
+			strippedsel="$(printf "%s" "$sel" | sed -z 's/\n/@newline@/g')"
+
+			# Delete repeated entries 
+			if [ ! "$(printf "%s" "$strippedsel" | grep "~")" ]; then # the selection doesn't have "~"
+				sed -i "\~^$strippedsel\$~d" "$histfile"
+			elif [ ! "$(printf "%s" "$strippedsel" | grep "/")" ]; then 
+				sed -i "/^$strippedsel\$/d" "$histfile"
+			elif [ ! "$(printf "%s" "$strippedsel" | grep "|")" ]; then 
+				sed -i "\|^$strippedsel\$|d" "$histfile"
+			fi
+			
+			printf "%s\n" "$strippedsel" >> "$histfile"
+			limitsize="$(tail -n 100 "$histfile")"
+			printf "%s\n" "$limitsize" > "$histfile"
+		done
+	else
+		echo "Daemon already running"
+	fi
+else
+	totheclip="$(cat "$histfile" | fzf --tac --bind "k:up,j:down,q:abort,ctrl-d:execute(echo 'desguadelete')+accept")"	
+	#totheclip="$(cat "$histfile" | fzf --tac --bind "k:up,j:down,q:abort")"	
+	if [ "$totheclip" ]; then
+		if [ "$(printf "%s" "$totheclip" | head -n 1)" = "desguadelete" ]; then 
+			delete="$(printf "%s" "$totheclip" | tail -n 1 | sed 's/\*/\\*/g')"
+			if [ ! "$(printf "%s" "$delete" | grep "~")" ]; then 
+				sed -i "\~^$delete\$~d" "$histfile"
+			elif [ ! "$(printf "%s" "$delete" | grep "/")" ]; then 
+				sed -i "/^$delete\$/d" "$histfile"
+			elif [ ! "$(printf "%s" "$delete" | grep "|")" ]; then 
+				sed -i "\|^$delete\$|d" "$histfile"
+			fi
+		else
+			printf "%s" "$totheclip" | sed 's/@newline@/\n/g' | xsel -b -i
+		fi
+		#echo "$totheclip copied"
+	#else
+		#echo "Aborted"
+	fi
+fi
+
+exit 0
