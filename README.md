@@ -6,9 +6,9 @@ Fast and lightweight clipboard manager
                                                   manager prevents that from happening, keeping the clipboard always ready     
                                                   to paste the last copied content).    
                                                   
-- We use two modified versions of clipnotify (https://github.com/cdown/clipnotify), one to listen to clipboard content change,    
-                                                  and the other to listen to clipboard getting empty (both a precompiled and 
-                                                  source code are available here).
+- We use a modified version of clipnotify (https://github.com/cdown/clipnotify), to listen to clipboard content change,    
+                                                  and to check when clipboard get empty (both precompiled and the source 
+                                                  are available here).
 
 # Dependencies
 - fzf 
@@ -16,6 +16,7 @@ Fast and lightweight clipboard manager
 
 # How to use it    
 - Start the daemon: fzfclipmanager -d     
+- Stop the daemon: fzfclipmanager -q
 - Set up a shortcut to open your favorite terminal emulator and run fzfclipmanager     
 
 Keyboard shortcuts:    
@@ -27,7 +28,6 @@ Keyboard shortcuts:
 # Step by step instructions for beginners:
 1. Install fzf and xsel and a terminal emulator like st for example on Debian based systems:
     apt install fzf xsel st
-2. Download the files fzfclipmanager, clipnotifychanged, clipnotifyempty and place then 
-    inside a folder that is on your $PATH
+2. Download the files fzfclipmanager ane clipnotify and place them inside a folder in your ${PATH}
 3. Create a shortcut to run fzfclipmanager, for example "st fzfclipmanager"
 4. Create a startup for the daemon "fzfclipmanager -d"
